@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, send_file, send_from_directory, jsonify
+from flask import Flask, render_template, request, send_file, session,send_from_directory, jsonify
 from werkzeug.utils import secure_filename
 import os
 from utils.process_image import process_image
@@ -11,8 +11,25 @@ os.makedirs(RESULT_FOLDER, exist_ok=True)
 
 
 @app.route('/')
+def index():
+    if 'username' in session:
+        return 'You are logged in as ' + session['username']
+
+    return render_template('login.html')
+
+@app.route('/login', methods=['POST'])
+def login():
+     return ''
+
+@app.route('/register', methods=['POST', 'GET'])
+def register():
+    return render_template('register.html')
+
+
+@app.route('/')
 def hello_world():
     return render_template('index.html', name='World')
+
 
 
 @app.route('/', methods=['POST', 'GET'])
