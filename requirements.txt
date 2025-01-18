@@ -13,3 +13,4 @@ setuptools
 numpy<2.0
 pymongo[srv]
 bcrypt
+dnspython>=2.6.1 # not directly required, pinned by Snyk to avoid a vulnerability
