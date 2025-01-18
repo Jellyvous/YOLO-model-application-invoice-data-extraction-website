@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Register</title>
     <style>
         * {
             margin: 0;
@@ -17,10 +17,10 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            background: linear-gradient(135deg, #ff7eb3, #ff758c);
         }
 
-        .login-container {
+        .register-container {
             background: white;
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -29,13 +29,13 @@
             max-width: 400px;
         }
 
-        .login-container h2 {
+        .register-container h2 {
             text-align: center;
             margin-bottom: 20px;
             color: #333;
         }
 
-        .login-container form {
+        .register-container form {
             display: flex;
             flex-direction: column;
         }
@@ -61,11 +61,11 @@
         }
 
         .form-group input:focus {
-            border-color: #2575fc;
+            border-color: #ff758c;
         }
 
-        .login-btn {
-            background: #2575fc;
+        .signup-btn {
+            background: #ff758c;
             color: white;
             border: none;
             padding: 10px;
@@ -75,8 +75,8 @@
             transition: background-color 0.3s;
         }
 
-        .login-btn:hover {
-            background: #6a11cb;
+        .signup-btn:hover {
+            background: #ff7eb3;
         }
 
         .text-center {
@@ -85,33 +85,41 @@
         }
 
         .text-center a {
-            color: #2575fc;
+            color: #ff758c;
             text-decoration: none;
             font-weight: bold;
             transition: color 0.3s;
         }
 
         .text-center a:hover {
-            color: #6a11cb;
+            color: #ff7eb3;
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <h2>Login</h2>
-        <form action="/login" method="POST">
+    <div class="register-container">
+        <h2>Sign Up</h2>
+        <form action="/register" method="POST">
             <div class="form-group">
-                <label for="email">User Name</label>
-                <input type="username" id="email" name="username" placeholder="Enter your username" required>
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username" required>
             </div>
             <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
             </div>
-            <button type="submit" class="login-btn">Login</button>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                </div>
+            <div class="form-group">
+                <label for="confirm-password">Confirm Password</label>
+                <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm your password" required>
+            </div>
+            <button type="submit" class="signup-btn">Sign Up</button>
         </form>
         <div class="text-center">
-            <p>Don't have an account? <a href="/register">Sign Up</a></p>
+            <p>Already have an account? <a href="/login">Login</a></p>
         </div>
     </div>
 </body>

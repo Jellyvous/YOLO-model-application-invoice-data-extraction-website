@@ -11,3 +11,5 @@ ultralytics
 vietocr
 setuptools
 numpy<2.0
+pymongo[srv]
+bcrypt
