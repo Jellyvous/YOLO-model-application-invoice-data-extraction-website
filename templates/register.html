@@ -40,6 +40,44 @@
             flex-direction: column;
         }
 
+        
+        .flash-messages {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .flash-messages li {
+            background-color: #f8d7da; 
+            border: 1px solid #f5c6cb;  
+            color: #721c24;  /* text color */
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;  
+            font-size: 16px;  
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);  
+            transition: all 0.3s ease;  
+        }
+        
+        .flash-messages li:hover {
+            background-color: #f5c6cb;  
+            border-color: #f1a7a1; 
+            transform: scale(1.05);  
+        }
+        
+        .flash-messages li .close-btn {
+            background: none;
+            border: none;
+            color: #721c24;
+            font-size: 18px;
+            font-weight: bold;
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            cursor: pointer;
+        }
+ 
+
         .form-group {
             margin-bottom: 15px;
         }
@@ -99,6 +137,20 @@
 <body>
     <div class="register-container">
         <h2>Sign Up</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flash-messages">
+                    {% for category, message in messages %}
+                        <li class="{{ category }}">
+                            {{ message }}
+                            <button class="close-btn" onclick="this.parentElement.style.display='none'">&times;</button>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+         {% endwith %}
+
         <form action="/register" method="POST">
             <div class="form-group">
                 <label for="username">Username</label>
