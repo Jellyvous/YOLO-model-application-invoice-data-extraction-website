@@ -9,6 +9,54 @@ body {
     margin-top: 50px;
 }
 
+.flash-messages {
+    margin: 20px 0;
+}
+
+.flash {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.flash.success {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.flash.error {
+    background-color: #F44336;
+    color: white;
+}
+
+.popup {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    z-index: 1000;
+    display: block;
+    animation: fadeOut 3s forwards;
+}
+
+/* Animation to fade out the popup */
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        top: 0px; /* Move it up slightly to show it's disappearing */
+    }
+}
+
 button {
     margin: 10px;
     padding: 10px 20px;
@@ -45,4 +93,67 @@ button {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+
+/* Table for data */
+
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+
+th, td {
+    padding: 8px;
+    text-align: left;
+}
+
+.editable {
+    background-color: #f9f9f9;
+}
+
+.editable:focus {
+    background-color: #e0f7fa;
+    outline: none;
+}
+
+#storeName {
+    display: inline-block;
+    padding: 4px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: auto;
+    min-width: 150px;
+    background-color: #f9f9f9;
+}
+
+#storeName:focus {
+    background-color: #e0f7fa;
+}
+
+.download-btn, .confirm-btn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.download-btn:hover, .confirm-btn:hover {
+    background-color: #45a049;
+}
+
+.confirm-btn {
+    background-color: #008CBA;
+    margin-left: 10px;
+}
+
+.confirm-btn:hover {
+    background-color: #006F8E;
 }
