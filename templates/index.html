@@ -8,6 +8,12 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+
+    {% if 'username' in session %}
+        <p>Hello, {{ session["username"] }}! Isn't you?</p>
+        <a href="{{ url_for('auth.logout_user') }}" class="btn btn-danger">Log Out</a>
+    {% endif %}
+
     <div>
         <!-- Image Background -->
         <img src="static/images/background-header.png" class="img-fluid" alt="Responsive image">
@@ -16,32 +22,58 @@
 
         <form action="/" method="post" enctype="multipart/form-data">
             
-            <div class="row">
-                <div class="col-sm-6">
-                    <button type="button" class="btn btn-primary" onclick="document.getElementById('image-input').click();">IMPORT IMAGE</button>
-                    <input type="file" id="image-input" name="file" accept="image/*" style="display: none;" onchange="loadImage(event)">
-                    <div id="image-box">
-                        <p>No image selected</p>
-                    </div>
-                </div>
-                <div class="col-sm-6">
-                    <button id="detect-button" type="submit" class="btn btn-primary">DETECT IMAGE</button>
-                    <div id="text-box">
-                        <!-- Text area for displaying and editing the extracted text -->
-                        <textarea id="extracted_text" class="form-control" rows="10" placeholder="Extracted text will appear here..."></textarea>
-                        <p>The data may not be completely accurate, please check it before downloading!</p>
-                    </div>
-                    
-                    <!-- Buttons to download as JSON or text -->
-                    <button type="button" class="btn btn-success" onclick="downloadText('json')">Download JSON</button>
-                    <button type="button" class="btn btn-success" onclick="downloadText('text')">Download Text</button>
-                </div>
+            <button type="button" class="btn btn-primary" onclick="document.getElementById('image-input').click();">IMPORT IMAGE</button>
+            <button id="detect-button" type="submit" class="btn btn-primary">DETECT IMAGE</button>
+
+            <input type="file" id="image-input" name="file" accept="image/*" style="display: none;" onchange="loadImage(event)">
+            <div id="image-box">
+                <p>No image selected</p>
             </div>
         </form>
+
+        <div class="table">
+            <h2>Invoice Results</h2>
+            <p><strong>Store Name:</strong> <span id="storeName"></span></p>
+            <table class="table table-bordered" id="resultTable">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data -->
+                </tbody>
+            </table>       
+            <button class="download-btn" onclick="downloadJSON()">Download JSON</button>
+            <button class="confirm-btn" onclick="confirmUpload()">Save to your Data</button> 
+        </div>
+        
+        
+
     </div>
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
+    <script>
+        window.onload = function() {
+            {% if 'username' in session %}
+                var message = 'Welcome, {{ session["username"] }}!';
+                showPopup(message);
+            {% endif %}
+        };
+    
+        function showPopup(message) {
+            var popup = document.createElement('div');
+            popup.className = 'popup';
+            popup.innerHTML = message;
+            document.body.appendChild(popup);
+    
+            setTimeout(function() {
+                popup.style.display = 'none';
+            }, 5000); 
+        }
+    </script>
 </body>
 </html>

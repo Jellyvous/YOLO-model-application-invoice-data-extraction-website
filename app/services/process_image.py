@@ -1,15 +1,19 @@
 import os
-import sqlite3
 import json
 import cv2
 from PIL import Image
 import logging
 from ultralytics.utils.plotting import Annotator
 from ultralytics import YOLO
-from config import RESULT_FOLDER
-from utils.helper import handle_overlapping_boxes, group_aligned_labels, cleanning_text, cleanning_num
+from app.config import RESULT_FOLDER
+from app.utils.helper import handle_overlapping_boxes, group_aligned_labels, cleanning_text, cleanning_num
 from vietocr.tool.predictor import Predictor
 from vietocr.tool.config import Cfg
+from werkzeug.utils import secure_filename
+from app.config import UPLOAD_FOLDER, RESULT_FOLDER
+from flask import jsonify
+
+
 
 # Load YOLO model globally to avoid reloading each time
 model = YOLO(r"yolo8v6.pt")
@@ -23,12 +27,6 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 def process_image(image_path, filename):
-    # Connect to Database
-    conn = sqlite3.connect('./database/detections.db')
-    c = conn.cursor()
-
-    
-
     # Read image and change to RGB
     img = Image.open(image_path)    
     results = model.predict(img)
@@ -64,18 +62,18 @@ def process_image(image_path, filename):
                 xmin, ymin, xmax, ymax, cls = int(xmin), int(ymin), int(xmax), int(ymax), int (cls)
                 
                 if cls == 0:
-                    th = int(6)
+                    offset = int(6)
                     # Crop image
-                    cropped_img = img.crop((xmin-th, ymin-th, xmax+th, ymax+th))
-                    b = [xmin-th, ymin-th, xmax+th, ymax+th]
+                    cropped_img = img.crop((xmin-offset, ymin-offset, xmax+offset, ymax+offset))
+                    b = [xmin-offset, ymin-offset, xmax+offset, ymax+offset]
                 elif cls == 2:
-                    th = int(4)
-                    cropped_img = img.crop((xmin-th, ymin-th, xmax+th, ymax+th))
-                    b = [xmin-th, ymin-th, xmax+th, ymax+th]
+                    offset = int(4)
+                    cropped_img = img.crop((xmin-offset, ymin-offset, xmax+offset, ymax+offset))
+                    b = [xmin-offset, ymin-offset, xmax+offset, ymax+offset]
                 elif cls == 3:
-                    th = int(8)
-                    cropped_img = img.crop((xmin-th, ymin-th, xmax+th, ymax+th))
-                    b = [xmin-th, ymin-th, xmax+th, ymax+th]
+                    offset = int(8)
+                    cropped_img = img.crop((xmin-offset, ymin-offset, xmax+offset, ymax+offset))
+                    b = [xmin-offset, ymin-offset, xmax+offset, ymax+offset]
                 else:
                     cropped_img = img.crop((xmin, ymin, xmax, ymax))
                     b = [xmin, ymin, xmax, ymax]
@@ -92,28 +90,24 @@ def process_image(image_path, filename):
                     clean_text = cleanning_text(text, cls)
                     item_info = {"item": clean_text}
                     extracted_text += f"Item: {clean_text}\n"
-                    c.execute("INSERT INTO detections (image_name, detected_class, detected_text) VALUES (?, ?, ?)", (filename, "item", clean_text))
                 elif cls == 1:
                     #text = pytesseract.image_to_string(cropped_img, lang='vie')
                     text = detector.predict(cropped_img)
                     clean_text = cleanning_text(text, cls)
                     store_data["store_name"] = clean_text
                     extracted_text += f"store_name: {clean_text}\n"
-                    c.execute("INSERT INTO detections (image_name, detected_class, detected_text) VALUES (?, ?, ?)", (filename, "store", clean_text))
                 elif cls == 2:
                     #num_quan = pytesseract.image_to_string(cropped_img, config='-c tessedit_char_whitelist=0123456789')
                     num_quan = detector.predict(cropped_img)
                     clean_num = cleanning_num(num_quan,  cls)
                     item_info["price"] = clean_num
                     extracted_text += f"Price: {clean_num}\n"
-                    c.execute("INSERT INTO detections (image_name, detected_class, detected_text) VALUES (?, ?, ?)", (filename, "price", clean_num))
                 elif cls == 3:
                     #num_quan = pytesseract.image_to_string(cropped_img, config='--psm 10 tessedit_char_whitelist=0123456789')
                     num_quan = detector.predict(cropped_img)
                     clean_num = cleanning_num(num_quan,  cls)
                     item_info["quantity"] = clean_num
                     extracted_text += f"Quantity: {clean_num}\n"
-                    c.execute("INSERT INTO detections (image_name, detected_class, detected_text) VALUES (?, ?, ?)", (filename, "quantity", clean_num))
                 else:
                     extracted_text += "EROR"
                     
@@ -129,8 +123,6 @@ def process_image(image_path, filename):
             result_json[filename].append(store_data)
     
             
-    conn.commit()
-    conn.close()
     
     # Save the image with bounding boxes
     processed_image_path = os.path.join(RESULT_FOLDER, filename)
@@ -145,4 +137,35 @@ def process_image(image_path, filename):
     return result_json_path, processed_image_path, extracted_text
     
 
+def process_uploaded_file(file):
+    filename = secure_filename(file.filename)
+    filepath = os.path.join(UPLOAD_FOLDER, filename)
+    file.save(filepath)
 
+    # Process image
+    result_json_path, processed_image_path, extracted_text = process_image(filepath, filename)
+    
+    # Read data
+    with open(result_json_path, 'r', encoding='utf-8') as f:
+        result_data = json.load(f)
+
+    store_name = None
+    items = []
+    
+    for item in result_data.get("R.jpg", []):
+        store_name = item.get("store_name", "")
+        for sub_item in item.get("items", []):
+            if "item" in sub_item and "quantity" in sub_item:
+                items.append({
+                    "item": sub_item.get("item", ""),
+                    "quantity": sub_item.get("quantity", ""),
+                    "price": sub_item.get("price", "")
+            })
+
+    response_data = {
+        'result_data': items,
+        'store_name': store_name,
+        'extracted_text': extracted_text
+    }
+
+    return jsonify(response_data)

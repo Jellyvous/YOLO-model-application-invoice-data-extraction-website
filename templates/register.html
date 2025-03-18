@@ -151,7 +151,7 @@
             {% endif %}
          {% endwith %}
 
-        <form action="/register" method="POST">
+        <form action="/auth/register" method="POST">
             <div class="form-group">
                 <label for="username">Username</label>
                 <input type="text" id="username" name="username" placeholder="Enter your username" required>
@@ -171,7 +171,7 @@
             <button type="submit" class="signup-btn">Sign Up</button>
         </form>
         <div class="text-center">
-            <p>Already have an account? <a href="/login">Login</a></p>
+            <p>Already have an account? <a href="/auth/login">Login</a></p>
         </div>
     </div>
 </body>
