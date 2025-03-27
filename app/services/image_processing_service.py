@@ -89,6 +89,7 @@ class ImageProcessingService:
                         clean_text = cleanning_text(text, cls)
                         item_info = {"item": clean_text}
                         extracted_text += f"Item: {clean_text}\n"
+
                     elif cls == 1:
                         #text = pytesseract.image_to_string(cropped_img, lang='vie')
                         text = self.detector.predict(cropped_img)
@@ -107,6 +108,7 @@ class ImageProcessingService:
                         clean_num = cleanning_num(num_quan,  cls)
                         item_info["quantity"] = clean_num
                         extracted_text += f"Quantity: {clean_num}\n"
+
                     else:
                         extracted_text += "EROR"
                         
@@ -122,9 +124,9 @@ class ImageProcessingService:
                 result_json[filename].append(store_data)
         
                 
-        
+
         # Save the image with bounding boxes
-        processed_image_path = os.path.join(Config['RESULT_FOLDER'], filename)
+        processed_image_path = os.path.join(Config.RESULT_FOLDER, filename)
         img = annotator.result()  
         cv2.imwrite(processed_image_path, img)
 

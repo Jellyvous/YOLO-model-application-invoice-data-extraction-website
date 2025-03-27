@@ -30,7 +30,7 @@ class HomeController:
                 image_file.save(filepath)
 
                 # Process image
-                result_json_path, processed_image_path, extracted_text = ImageProcessingService.process_image(self, filepath, filename)
+                result_json_path, processed_image_path, extracted_text = self.image_processor.process_image(filepath, filename)
             
                 # Read data
                 with open(result_json_path, 'r', encoding='utf-8') as f:
@@ -52,7 +52,7 @@ class HomeController:
                 response_data = {
                     'result_data': items,
                     'store_name': store_name,
-                    'extracted_text': extracted_text
+                    'extracted_text': extracted_text if extracted_text else ""
                 }
                 return jsonify(response_data)
 

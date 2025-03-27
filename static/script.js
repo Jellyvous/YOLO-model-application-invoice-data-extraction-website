@@ -23,8 +23,10 @@ form.addEventListener('submit', function(event) {
         body: formData,
     })
     .then(response => {
-        console.log(response);
-        response.json();
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json(); 
     })
     .then(data => {
         if (data.extracted_text) {
